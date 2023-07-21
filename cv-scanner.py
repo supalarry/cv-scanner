@@ -5,23 +5,31 @@ import magic
 from docx import Document
 
 def extract_text_from_pdf(file):
-    with open(file, 'rb') as file:
-        pdf_reader = PyPDF2.PdfReader(file)
+    try:
+        with open(file, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
 
-        text = ""
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
 
-    return text
+        return text
+    except Exception as e:
+        print(f"Error processing PDF file {file}: {e}")
+        return ""
 
 def extract_text_from_docx(file):
-    doc = Document(file)
+    try:
+        doc = Document(file)
 
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text
+        text = ""
+        for paragraph in doc.paragraphs:
+            text += paragraph.text
 
-    return text
+        return text
+    except Exception as e:
+        print(f"Error processing Word file {file}: {e}")
+        return ""
 
 def search_words(text, words):
     results = {}
@@ -49,9 +57,10 @@ if __name__ == "__main__":
         else:
             continue
 
-        occurrences = search_words(text, words_to_search)
+        if text:
+            occurrences = search_words(text, words_to_search)
 
-        if occurrences:
-            print(f"In file {file}:")
-            for word, count in occurrences.items():
-                print(f"  '{word}' found {count} time(s)")
+            if occurrences:
+                print(f"In file {file}:")
+                for word, count in occurrences.items():
+                    print(f"  '{word}' found {count} time(s)\n")
